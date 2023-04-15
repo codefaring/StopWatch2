@@ -31,13 +31,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnRecord.setOnClickListener { timeSave() }
+        binding.btnRecord.setOnClickListener {
+            timeSave()
+        }
 
-        binding.btnReset.setOnClickListener { reset() }
+        binding.btnReset.setOnClickListener {
+            reset()
+        }
     }
 
     private fun start() {
+        val color = getColor(R.color.coral)
         binding.btnStart.setImageResource(R.drawable.stop_vector)
+//        binding.btnStart.imageTintList = c
         timerTask = timer(period = 10) {
             time++
             val min = time / 6000
@@ -48,6 +54,8 @@ class MainActivity : AppCompatActivity() {
                     binding.showMillisecond.text = if(milli < 10) ".0$milli" else ".$milli"
                     binding.showSecond.text = if(sec < 10) ":0$sec" else ".$sec"
                     binding.showMinute.text = if(min < 10) "0$min" else "$min"
+                    binding.btnRecord.isEnabled = true
+                    binding.btnReset.isEnabled = true
                 }
             }
         }
@@ -59,10 +67,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun timeSave() {
-        val lapTime = this.time
+        val minTime = this.time / 6000
+        val secTime = (this.time % 6000) / 100
+        val milliTime = this.time % 100
         val textView = TextView(this)
-        textView.text = "${timeRecord}번째 기록: ${lapTime / 6000}:${(lapTime % 6000) / 100}.${lapTime % 100}"
+        val minRecord = if(minTime < 10) "0${minTime}" else "$minTime"
+        val secRecord = if(secTime < 10) "0${secTime}" else "$secTime"
+        val milliRecord = if(milliTime < 10) "0${milliTime}" else "$milliTime"
+        textView.text = if(timeRecord < 10) "0${timeRecord}번째 기록: ${minRecord}:${secRecord}.${milliRecord}" else "${timeRecord}번째 기록: ${minRecord}:${secRecord}.${milliRecord}"
 
+        binding.btnReset.isEnabled = true
         binding.recordLayout.addView(textView, 0)
         timeRecord++
     }
@@ -76,6 +90,9 @@ class MainActivity : AppCompatActivity() {
         binding.showMinute.text = "00"
         binding.showSecond.text = ":00"
         binding.showMillisecond.text = ".00"
+
+        binding.btnRecord.isEnabled = false
+        binding.btnReset.isEnabled = false
 
         binding.recordLayout.removeAllViews()
         timeRecord = 1
